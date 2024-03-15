@@ -45,24 +45,16 @@ func main() {
 
 	gl.UseProgram(program)
 
-	vertices := []mgl32.Vec2{
-		/*// left square
-		{-0.89, -0.18},
-		{-0.89, 0.18},
-		{-0.95, -0.18},
-		{-0.95, 0.18},
-		// right square
-		{0.89, -0.18},
-		{0.89, 0.18},
-		{0.95, -0.18},
-		{0.95, 0.18},
-		*/
+	ship_vertices := []mgl32.Vec2{
 		{+0.0, +0.05},
 		{+0.05, -0.05},
 		{-0.05, -0.05},
 	}
 
-	send_to_gpu(&vertices, &program)
+	ship := create_body()
+	ship.set_vertices(ship_vertices)
+
+	send_to_gpu(&ship.vertices, &program)
 
 	glfw.GetCurrentContext().Show()
 
@@ -74,11 +66,9 @@ func main() {
 	)
 
 	var (
-		s_x float32 = 1.0
-		s_y float32 = 1.0
-		rot float32 = 0.0
-		t_x float32 = 0.0
-		t_y float32 = 0.0
+		angle    float32 = 0.0
+		s_x, s_y float32 = 1.0, 1.0
+		t_x, t_y float32 = 0.0, 0.0
 	)
 
 	width, height := window.GetFramebufferSize()
@@ -89,10 +79,15 @@ func main() {
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
 		check_scale(window, &s_x, &s_y)
-		check_rotation(window, &rot, "mouse", width, height)
-		check_movement(window, &t_x, &t_y)
+		ship.resize(s_x, s_y)
 
-		mat_transformation := apply_transformation(s_x, s_y, rot, t_x, t_y)
+		check_rotation(window, &angle, "mouse", width, height)
+		ship.rotate(angle)
+
+		check_movement(window, &t_x, &t_y)
+		ship.translate(t_x, t_y)
+
+		mat_transformation := ship.get_transformation_mat()
 
 		var loc uint8
 		gl.GetUniformLocation(program, &loc)
@@ -100,7 +95,6 @@ func main() {
 		gl.UniformMatrix4fv(int32(loc), 1, true, &mat_transformation[0])
 
 		gl.DrawArrays(gl.TRIANGLE_STRIP, 0, 3)
-		//gl.DrawArrays(gl.TRIANGLE_STRIP, 4, 4)
 
 		glfw.PollEvents()
 		window.SwapBuffers()

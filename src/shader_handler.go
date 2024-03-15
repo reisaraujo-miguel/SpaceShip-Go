@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"strings"
 	"unsafe"
 
@@ -10,20 +9,17 @@ import (
 )
 
 func get_shaders() (vertex uint32, fragment uint32) {
-	vertex_code := `
-	attribute vec2 position;
-	uniform mat4 mat_transformation;
+	vertex_code := "" +
+		"attribute vec2 position;\n" +
+		"uniform mat4 mat_transformation;\n" +
+		"void main() {\n" +
+		"	gl_Position = mat_transformation * vec4(position, 0.0, 1.0);\n" +
+		"}\x00"
 
-	void main() {
-		gl_Position = mat_transformation * vec4(position, 0.0, 1.0);
-	}
-	`
-
-	fragment_code := `
-	void main() {
-		gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-	}
-	`
+	fragment_code := "" +
+		"void main() {\n" +
+		"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
+		"}\x00"
 
 	c_vertex_code, c_vertex_free := gl.Strs(vertex_code)
 	c_fragment_code, c_fragment_free := gl.Strs(fragment_code)
@@ -95,34 +91,4 @@ func send_to_gpu(vertices *[]mgl32.Vec2, program *uint32) {
 	gl.EnableVertexAttribArray(uint32(loc))
 
 	gl.VertexAttribPointer(uint32(loc), 2, gl.FLOAT, false, int32(unsafe.Sizeof(vertices)), nil)
-}
-
-func apply_transformation(s_x float32, s_y float32, rot float32, t_x float32, t_y float32) mgl32.Mat4 {
-	scale := mgl32.Mat4{
-		s_x, 0.0, 0.0, 0.0,
-		0.0, s_y, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0,
-	}
-
-	cos := float32(math.Cos(float64(-rot)))
-	sin := float32(math.Sin(float64(-rot)))
-
-	rotation := mgl32.Mat4{
-		cos, -sin, 0.0, 0.0,
-		sin, cos, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0,
-	}
-
-	translation := mgl32.Mat4{
-		1.0, 0.0, 0.0, t_x,
-		0.0, 1.0, 0.0, t_y,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0,
-	}
-
-	mat_transformation := scale.Mul4(rotation.Mul4(translation))
-
-	return mat_transformation
 }
