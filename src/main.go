@@ -71,8 +71,6 @@ func main() {
 		t_x, t_y float32 = 0.0, 0.0
 	)
 
-	width, height := window.GetFramebufferSize()
-
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
@@ -81,11 +79,11 @@ func main() {
 		check_scale(window, &s_x, &s_y)
 		ship.resize(s_x, s_y)
 
-		check_rotation(window, &angle, "mouse", width, height)
-		ship.rotate(angle)
-
 		check_movement(window, &t_x, &t_y)
 		ship.translate(t_x, t_y)
+
+		check_rotation(window, &angle, t_x, t_y)
+		ship.rotate(angle)
 
 		mat_transformation := ship.get_transformation_mat()
 
