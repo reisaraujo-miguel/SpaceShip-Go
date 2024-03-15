@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"math"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -89,23 +88,8 @@ func main() {
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
-		cursor_x, cursor_y := window.GetCursorPos()
-
-		cat_x := cursor_x - float64(width/2)
-		cat_y := float64(height/2) - cursor_y
-
-		if cat_y > 0 {
-			rot = float32(math.Atan(cat_x / cat_y))
-		} else {
-			if cat_x > 0 {
-				rot = float32(math.Atan(-cat_y/cat_x)) + 1.571
-			} else {
-				rot = float32(math.Atan(-cat_y/cat_x)) - 1.571
-			}
-		}
-
 		check_scale(window, &s_x, &s_y)
-		check_rotation(window, &rot)
+		check_rotation(window, &rot, "mouse", width, height)
 		check_movement(window, &t_x, &t_y)
 
 		mat_transformation := apply_transformation(s_x, s_y, rot, t_x, t_y)
