@@ -45,16 +45,28 @@ func main() {
 
 	gl.UseProgram(program)
 
+	var global_vertices []mgl32.Vec2
+
 	ship_vertices := []mgl32.Vec2{
 		{+0.0, +0.05},
 		{+0.05, -0.05},
 		{-0.05, -0.05},
 	}
 
-	ship := create_body()
-	ship.set_vertices(ship_vertices)
+	box_vertices := []mgl32.Vec2{
+		{0.10, -0.05},
+		{0.10, 0.05},
+		{0.20, -0.05},
+		{0.20, 0.05},
+	}
 
-	send_to_gpu(&ship.vertices, &program)
+	ship := create_body()
+	ship.instantiate(ship_vertices, &global_vertices)
+
+	box := create_body()
+	box.instantiate(box_vertices, &global_vertices)
+
+	send_to_gpu(&global_vertices, &program)
 
 	glfw.GetCurrentContext().Show()
 
@@ -72,12 +84,14 @@ func main() {
 	)
 
 	for !window.ShouldClose() {
+		glfw.PollEvents()
+
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
 		check_scale(window, &s_x, &s_y)
-		ship.resize(s_x, s_y)
+		ship.scale(s_x, s_y)
 
 		check_movement(window, &t_x, &t_y)
 		ship.translate(t_x, t_y)
@@ -85,16 +99,9 @@ func main() {
 		check_rotation(window, &angle, t_x, t_y)
 		ship.rotate(angle)
 
-		mat_transformation := ship.get_transformation_mat()
+		ship.draw_body(&program)
+		box.draw_body(&program)
 
-		var loc uint8
-		gl.GetUniformLocation(program, &loc)
-
-		gl.UniformMatrix4fv(int32(loc), 1, true, &mat_transformation[0])
-
-		gl.DrawArrays(gl.TRIANGLE_STRIP, 0, 3)
-
-		glfw.PollEvents()
 		window.SwapBuffers()
 	}
 }
