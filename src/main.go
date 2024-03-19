@@ -17,7 +17,7 @@ func main() {
 
 	glfw.WindowHint(glfw.Visible, glfw.False)
 
-	window, err := glfw.CreateWindow(600, 600, "Pong-Go!", nil, nil)
+	window, err := glfw.CreateWindow(600, 600, "SpaceShip-Go!", nil, nil)
 
 	if err != nil {
 		log.Fatalln("Could not create window: ", err)
