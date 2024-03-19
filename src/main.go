@@ -81,6 +81,7 @@ func main() {
 		angle    float32 = 0.0
 		s_x, s_y float32 = 1.0, 1.0
 		t_x, t_y float32 = 0.0, 0.0
+		inc      float32 = 0.0
 	)
 
 	for !window.ShouldClose() {
@@ -93,11 +94,14 @@ func main() {
 		check_scale(window, &s_x, &s_y)
 		ship.scale(s_x, s_y)
 
-		check_movement(window, &t_x, &t_y)
+		check_movement(window, &inc)
+		move_towards_mouse(window, &t_x, &t_y, inc)
 		ship.translate(t_x, t_y)
 
 		check_rotation(window, &angle, t_x, t_y)
 		ship.rotate(angle)
+
+		//t_y = old_y
 
 		ship.draw_body(&program)
 		box.draw_body(&program)
