@@ -39,17 +39,18 @@ func check_rotation(window *glfw.Window, angle *float32, x float32, y float32) {
 }
 
 func check_scale(window *glfw.Window, s_x *float32, s_y *float32) {
-	if window.GetKey(glfw.KeyW) == glfw.Press {
-		*s_y += 0.01
-	}
-	if window.GetKey(glfw.KeyS) == glfw.Press {
-		*s_y -= 0.01
-	}
-	if window.GetKey(glfw.KeyD) == glfw.Press {
-		*s_x += 0.01
-	}
-	if window.GetKey(glfw.KeyA) == glfw.Press {
-		*s_x -= 0.01
+	minus_key := window.GetKey(glfw.KeyMinus) == glfw.Press
+	shift_key := (window.GetKey(glfw.KeyLeftShift) == glfw.Press) || (window.GetKey(glfw.KeyRightShift) == glfw.Press)
+	plus_key := (window.GetKey(glfw.KeyEqual) == glfw.Press) && shift_key
+
+	if plus_key {
+		*s_y += 0.1
+		*s_x += 0.1
+	} else if minus_key {
+		if (*s_x > 0) && (*s_y > 0) {
+			*s_y -= 0.1
+			*s_x -= 0.1
+		}
 	}
 }
 
