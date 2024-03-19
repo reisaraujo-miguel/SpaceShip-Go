@@ -96,12 +96,11 @@ func main() {
 
 		check_movement(window, &inc)
 		move_towards_mouse(window, &t_x, &t_y, inc)
+		screen_wrap(&t_x, &t_y)
 		ship.translate(t_x, t_y)
 
 		check_rotation(window, &angle, t_x, t_y)
 		ship.rotate(angle)
-
-		//t_y = old_y
 
 		ship.draw_body(&program)
 		box.draw_body(&program)

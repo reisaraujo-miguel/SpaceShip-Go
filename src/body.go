@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
+	"github.com/go-gl/glfw/v3.3/glfw"
 	"github.com/go-gl/mathgl/mgl32"
 )
 
@@ -97,4 +98,37 @@ func (b *Body) draw_body(program *uint32) {
 	gl.UniformMatrix4fv(int32(loc), 1, true, &mat_transformation[0])
 
 	gl.DrawArrays(gl.TRIANGLE_STRIP, b.start_vertice, b.vertices_count)
+}
+
+func move_towards_mouse(window *glfw.Window, x *float32, y *float32, inc float32) {
+	width, height := window.GetFramebufferSize()
+
+	cursor_x, cursor_y := window.GetCursorPos()
+	origin_x, origin_y := (width / 2), (height / 2)
+
+	cat_x := (cursor_x - float64(origin_x)) - float64(*x*float32(origin_x))
+	cat_y := (float64(origin_y) - cursor_y) - float64(*y*float32(origin_y))
+
+	// Geometry rules
+	vector_magnitude := math.Sqrt(math.Pow(cat_x, 2) + math.Pow(cat_y, 2))
+
+	x_component := cat_x / vector_magnitude
+	y_component := cat_y / vector_magnitude
+
+	*x += inc * float32(x_component)
+	*y += inc * float32(y_component)
+}
+
+func screen_wrap(x *float32, y *float32) {
+	if *x > 1 {
+		*x = -1
+	} else if *x < -1 {
+		*x = 1
+	}
+
+	if *y > 1 {
+		*y = -1
+	} else if *y < -1 {
+		*y = 1
+	}
 }
