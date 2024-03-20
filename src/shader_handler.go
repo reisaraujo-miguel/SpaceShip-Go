@@ -9,17 +9,21 @@ import (
 )
 
 func get_shaders() (vertex uint32, fragment uint32) {
-	vertex_code := "" +
-		"attribute vec2 position;\n" +
-		"uniform mat4 mat_transformation;\n" +
-		"void main() {\n" +
-		"	gl_Position = mat_transformation * vec4(position, 0.0, 1.0);\n" +
-		"}\x00"
+	vertex_code :=
+		`
+		attribute vec2 position;
+		uniform mat4 mat_transformation;
+		void main() {
+			gl_Position = mat_transformation * vec4(position, 0.0, 1.0);
+		}
+		` + "\x00"
 
-	fragment_code := "" +
-		"void main() {\n" +
-		"	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
-		"}\x00"
+	fragment_code :=
+		`
+		void main() {
+			gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+		}
+		` + "\x00"
 
 	c_vertex_code, c_vertex_free := gl.Strs(vertex_code)
 	c_fragment_code, c_fragment_free := gl.Strs(fragment_code)
@@ -46,11 +50,11 @@ func compile_shader(shader_obj *uint32) {
 		var log_length int32
 		gl.GetShaderiv(*shader_obj, gl.INFO_LOG_LENGTH, &log_length)
 
-		log := strings.Repeat("\x00", int(log_length))
+		log := strings.Repeat("\x00", int(log_length+1))
 
 		gl.GetShaderInfoLog(*shader_obj, log_length, nil, gl.Str(log))
 
-		print("gl.CompileShader(*shader_obj): ", log)
+		println("gl.CompileShader(*shader_obj): ", log)
 		panic("shader_obj compile error.")
 	}
 }
@@ -65,11 +69,11 @@ func link_program(program_obj *uint32) {
 		var log_length int32
 		gl.GetShaderiv(*program_obj, gl.INFO_LOG_LENGTH, &log_length)
 
-		log := strings.Repeat("\x00", int(log_length))
+		log := strings.Repeat("\x00", int(log_length+1))
 
 		gl.GetShaderInfoLog(*program_obj, log_length, nil, gl.Str(log))
 
-		print("gl.LinkProgram(*program_obj): ", log)
+		println("gl.LinkProgram(*program_obj): ", log)
 		panic("Program link error.")
 	}
 }

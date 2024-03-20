@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -25,18 +26,19 @@ func main() {
 
 	window.MakeContextCurrent()
 
-	glfw.GetCurrentContext().SetKeyCallback(key_event)
-	glfw.GetCurrentContext().SetMouseButtonCallback(mouse_event)
+	window.SetKeyCallback(key_event)
+	window.SetMouseButtonCallback(mouse_event)
 
 	if err := gl.Init(); err != nil {
 		log.Fatalln("Could not init gl: ", err)
 	}
 
-	program := gl.CreateProgram()
 	vertex, fragment := get_shaders()
 
 	compile_shader(&vertex)
 	compile_shader(&fragment)
+
+	program := gl.CreateProgram()
 
 	gl.AttachShader(program, vertex)
 	gl.AttachShader(program, fragment)
@@ -68,7 +70,7 @@ func main() {
 
 	send_to_gpu(&global_vertices, &program)
 
-	glfw.GetCurrentContext().Show()
+	window.Show()
 
 	const (
 		BG_RED   float32 = 0.03
@@ -78,33 +80,42 @@ func main() {
 	)
 
 	var (
-		angle    float32 = 0.0
-		s_x, s_y float32 = 1.0, 1.0
-		t_x, t_y float32 = 0.0, 0.0
-		inc      float32 = 0.0
+		angle        float32 = 0.0
+		s_x, s_y     float32 = 1.0, 1.0
+		t_x, t_y     float32 = 0.0, 0.0
+		speed        float32 = 0.0
+		size_factor  float32 = 1.5
+		speed_factor float32 = 0.05
+		start_time   time.Time
 	)
 
 	for !window.ShouldClose() {
-		glfw.PollEvents()
+		current_time := time.Now()
+		delta_time := float32(current_time.Sub(start_time).Seconds())
+		start_time = current_time
+
+		//println(delta_time)
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
-		check_scale(window, &s_x, &s_y)
+		check_scale(window, &s_x, &s_y, size_factor*delta_time)
 		ship.scale(s_x, s_y)
 
-		check_movement(window, &inc)
-		move_towards_mouse(window, &t_x, &t_y, inc)
+		check_movement(window, &speed, speed_factor)
+		move_towards_mouse(window, &t_x, &t_y, speed*delta_time)
 		screen_wrap(&t_x, &t_y)
 		ship.translate(t_x, t_y)
 
+		angle *= delta_time
 		check_rotation(window, &angle, t_x, t_y)
 		ship.rotate(angle)
 
 		ship.draw_body(&program)
 		box.draw_body(&program)
 
+		glfw.PollEvents()
 		window.SwapBuffers()
 	}
 }

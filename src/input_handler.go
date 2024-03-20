@@ -9,12 +9,12 @@ import (
 func key_event(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
 }
 
-func check_movement(window *glfw.Window, inc *float32) {
+func check_movement(window *glfw.Window, speed *float32, factor float32) {
 	if window.GetKey(glfw.KeyUp) == glfw.Press {
-		*inc += 0.0005
+		*speed += factor
 	}
 	if window.GetKey(glfw.KeyDown) == glfw.Press {
-		*inc -= 0.0005
+		*speed -= factor
 	}
 }
 
@@ -38,18 +38,18 @@ func check_rotation(window *glfw.Window, angle *float32, x float32, y float32) {
 	}
 }
 
-func check_scale(window *glfw.Window, s_x *float32, s_y *float32) {
+func check_scale(window *glfw.Window, s_x *float32, s_y *float32, factor float32) {
 	minus_key := window.GetKey(glfw.KeyMinus) == glfw.Press
 	shift_key := (window.GetKey(glfw.KeyLeftShift) == glfw.Press) || (window.GetKey(glfw.KeyRightShift) == glfw.Press)
 	plus_key := (window.GetKey(glfw.KeyEqual) == glfw.Press) && shift_key
 
 	if plus_key {
-		*s_y += 0.1
-		*s_x += 0.1
+		*s_y += factor
+		*s_x += factor
 	} else if minus_key {
 		if (*s_x > 0) && (*s_y > 0) {
-			*s_y -= 0.1
-			*s_x -= 0.1
+			*s_y -= factor
+			*s_x -= factor
 		}
 	}
 }

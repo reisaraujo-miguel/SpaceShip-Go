@@ -92,10 +92,9 @@ func (b *Body) translate(x float32, y float32) {
 func (b *Body) draw_body(program *uint32) {
 	mat_transformation := b.scale_mat.Mul4(b.rotation_mat.Mul4(b.translation_mat))
 
-	var loc uint8
-	gl.GetUniformLocation(*program, &loc)
+	loc := gl.GetUniformLocation(*program, gl.Str("mat_transformation\x00"))
 
-	gl.UniformMatrix4fv(int32(loc), 1, true, &mat_transformation[0])
+	gl.UniformMatrix4fv(loc, 1, true, &mat_transformation[0])
 
 	gl.DrawArrays(gl.TRIANGLE_STRIP, b.start_vertice, b.vertices_count)
 }
