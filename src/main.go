@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"time"
 
 	"github.com/go-gl/gl/v4.6-core/gl"
 	"github.com/go-gl/glfw/v3.3/glfw"
@@ -86,13 +85,14 @@ func main() {
 		speed        float32 = 0.0
 		size_factor  float32 = 1.5
 		speed_factor float32 = 0.05
-		start_time   time.Time
+		delta_time   float32
+		last_frame   float32
 	)
 
 	for !window.ShouldClose() {
-		current_time := time.Now()
-		delta_time := float32(current_time.Sub(start_time).Seconds())
-		start_time = current_time
+		current_frame := float32(glfw.GetTime())
+		delta_time = current_frame - last_frame
+		last_frame = current_frame
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
