@@ -85,13 +85,21 @@ func main() {
 		speed        float32 = 0.0
 		size_factor  float32 = 1.5
 		speed_factor float32 = 0.05
-		delta_time   float32
-		last_frame   float32
+		delta_time   float32 = -1.0
+		last_frame   float32 = float32(glfw.GetTime())
+		alpha        float32 = 0.1
 	)
 
 	for !window.ShouldClose() {
 		current_frame := float32(glfw.GetTime())
-		delta_time = current_frame - last_frame
+
+		if delta_time < 0 {
+			delta_time = current_frame - last_frame
+			println("first frame!")
+		} else {
+			delta_time = lerp(delta_time, current_frame-last_frame, alpha)
+		}
+
 		last_frame = current_frame
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
@@ -115,4 +123,8 @@ func main() {
 		glfw.PollEvents()
 		window.SwapBuffers()
 	}
+}
+
+func lerp(last_delta float32, new_delta float32, alpha float32) float32 {
+	return (1-alpha)*last_delta + alpha*new_delta
 }
