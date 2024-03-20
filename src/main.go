@@ -83,10 +83,10 @@ func main() {
 		s_x, s_y     float32 = 1.0, 1.0
 		t_x, t_y     float32 = 0.0, 0.0
 		speed        float32 = 0.0
-		size_factor  float32 = 1.5
+		size_factor  float32 = 0.05
 		speed_factor float32 = 0.05
 		delta_time   float32
-		last_frame   float32
+		last_frame   float32 = float32(glfw.GetTime())
 	)
 
 	for !window.ShouldClose() {
@@ -98,7 +98,7 @@ func main() {
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
-		check_scale(window, &s_x, &s_y, size_factor*delta_time)
+		check_scale(window, &s_x, &s_y, size_factor)
 		ship.scale(s_x, s_y)
 
 		check_movement(window, &speed, speed_factor)
@@ -106,7 +106,7 @@ func main() {
 		screen_wrap(&t_x, &t_y)
 		ship.translate(t_x, t_y)
 
-		check_rotation(window, &angle, t_x, t_y)
+		check_rotation(window, t_x, t_y, &angle)
 		ship.rotate(angle)
 
 		ship.draw_body(&program)
