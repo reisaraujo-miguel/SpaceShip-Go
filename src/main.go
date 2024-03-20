@@ -94,8 +94,6 @@ func main() {
 		delta_time := float32(current_time.Sub(start_time).Seconds())
 		start_time = current_time
 
-		//println(delta_time)
-
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
@@ -108,7 +106,6 @@ func main() {
 		screen_wrap(&t_x, &t_y)
 		ship.translate(t_x, t_y)
 
-		angle *= delta_time
 		check_rotation(window, &angle, t_x, t_y)
 		ship.rotate(angle)
 
