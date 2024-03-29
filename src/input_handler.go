@@ -50,10 +50,3 @@ func check_rotation(window *glfw.Window, x float32, y float32, angle *float32) {
 		}
 	}
 }
-
-func mouse_event(window *glfw.Window, button glfw.MouseButton, action glfw.Action, mods glfw.ModifierKey) {
-	print("mouse")
-}
-
-func key_event(window *glfw.Window, key glfw.Key, scancode int, action glfw.Action, mods glfw.ModifierKey) {
-}

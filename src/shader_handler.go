@@ -67,11 +67,11 @@ func link_program(program_obj *uint32) {
 
 	if status == gl.FALSE {
 		var log_length int32
-		gl.GetShaderiv(*program_obj, gl.INFO_LOG_LENGTH, &log_length)
+		gl.GetProgramiv(*program_obj, gl.INFO_LOG_LENGTH, &log_length)
 
 		log := strings.Repeat("\x00", int(log_length+1))
 
-		gl.GetShaderInfoLog(*program_obj, log_length, nil, gl.Str(log))
+		gl.GetProgramInfoLog(*program_obj, log_length, nil, gl.Str(log))
 
 		println("gl.LinkProgram(*program_obj): ", log)
 		panic("Program link error.")

@@ -25,9 +25,6 @@ func main() {
 
 	window.MakeContextCurrent()
 
-	window.SetKeyCallback(key_event)
-	window.SetMouseButtonCallback(mouse_event)
-
 	if err := gl.Init(); err != nil {
 		log.Fatalln("Could not init gl: ", err)
 	}
