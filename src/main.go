@@ -29,42 +29,42 @@ func main() {
 		log.Fatalln("Could not init gl: ", err)
 	}
 
-	vertex, fragment := get_shaders()
+	vertex, fragment := getShaders()
 
-	compile_shader(&vertex)
-	compile_shader(&fragment)
+	compileShader(&vertex)
+	compileShader(&fragment)
 
 	program := gl.CreateProgram()
 
 	gl.AttachShader(program, vertex)
 	gl.AttachShader(program, fragment)
 
-	link_program(&program)
+	linkProgram(&program)
 
 	gl.UseProgram(program)
 
-	var global_vertices []mgl32.Vec2
+	var globalVertices []mgl32.Vec2
 
-	ship_vertices := []mgl32.Vec2{
+	shipVertices := []mgl32.Vec2{
 		{+0.0, +0.05},
 		{+0.05, -0.05},
 		{-0.05, -0.05},
 	}
 
-	box_vertices := []mgl32.Vec2{
+	boxVertices := []mgl32.Vec2{
 		{0.10, -0.05},
 		{0.10, 0.05},
 		{0.20, -0.05},
 		{0.20, 0.05},
 	}
 
-	ship := create_body()
-	ship.instantiate(ship_vertices, &global_vertices)
+	ship := createBody()
+	ship.instantiate(shipVertices, &globalVertices)
 
-	box := create_body()
-	box.instantiate(box_vertices, &global_vertices)
+	box := createBody()
+	box.instantiate(boxVertices, &globalVertices)
 
-	send_to_gpu(&global_vertices, &program)
+	sendToGpu(&globalVertices, &program)
 
 	window.Show()
 
@@ -76,38 +76,38 @@ func main() {
 	)
 
 	var (
-		angle        float32 = 0.0
-		s_x, s_y     float32 = 1.0, 1.0
-		t_x, t_y     float32 = 0.0, 0.0
-		speed        float32 = 0.0
-		size_factor  float32 = 0.05
-		speed_factor float32 = 0.05
-		delta_time   float32
-		last_frame   float32 = float32(glfw.GetTime())
+		angle       float32 = 0.0
+		sX, sY      float32 = 1.0, 1.0
+		tX, tY      float32 = 0.0, 0.0
+		speed       float32 = 0.0
+		sizeFactor  float32 = 0.05
+		speedFactor float32 = 0.05
+		deltaTime   float32
+		lastFrame   float32 = float32(glfw.GetTime())
 	)
 
 	for !window.ShouldClose() {
-		current_frame := float32(glfw.GetTime())
-		delta_time = current_frame - last_frame
-		last_frame = current_frame
+		currentFrame := float32(glfw.GetTime())
+		deltaTime = currentFrame - lastFrame
+		lastFrame = currentFrame
 
 		gl.Clear(gl.COLOR_BUFFER_BIT)
 
 		gl.ClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_ALPHA)
 
-		check_scale(window, &s_x, &s_y, size_factor)
-		ship.scale(s_x, s_y)
+		checkScale(window, &sX, &sY, sizeFactor)
+		ship.scale(sX, sY)
 
-		check_movement(window, &speed, speed_factor)
-		move_towards_mouse(window, &t_x, &t_y, speed*delta_time)
-		screen_wrap(&t_x, &t_y)
-		ship.translate(t_x, t_y)
+		checkMovement(window, &speed, speedFactor)
+		moveTowardsMouse(window, &tX, &tY, speed*deltaTime)
+		screenWrap(&tX, &tY)
+		ship.translate(tX, tY)
 
-		check_rotation(window, t_x, t_y, &angle)
+		checkRotation(window, tX, tY, &angle)
 		ship.rotate(angle)
 
-		ship.draw_body(&program)
-		box.draw_body(&program)
+		ship.drawBody(&program)
+		box.drawBody(&program)
 
 		glfw.PollEvents()
 		window.SwapBuffers()
